@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    .invoice-container {
+      background: #fff;
+      max-width: 800px;
+      margin: auto;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      text-align: center;
+      color: #4CAF50;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .total {
+      text-align: right;
+      font-weight: bold;
+    }
+    .note {
+      background-color: #f1f8e9;
+      padding: 10px;
+      border-left: 5px solid #4CAF50;
+      margin: 20px 0;
+    }
+    .button-container {
+      display: flex;
+      justify-content: space-evenly;
+      margin-top: 20px;
+    }
+    .button {
+      display: block;
+      background: #4CAF50;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .button:hover {
+      background: #45a049;
+    }
+    .editable {
+      border: 1px dashed #ccc;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="invoice-container" id="invoice">
+  <h1 class="header">Invoice</h1>
+  <div>
+    <p><strong>From:</strong> <span class="editable" contenteditable="true">Okoroafor Kelechi Divine</span></p>
+    <p><strong>To:</strong> <span class="editable" contenteditable="true">[Client's Name]</span></p>
+  </div>
+
+  <table>
+    <tr>
+      <th>Invoice Number</th>
+      <th>Date</th>
+      <th>Due Date</th>
+    </tr>
+    <tr>
+      <td class="editable" contenteditable="true">INV-2024-001</td>
+      <td class="editable" contenteditable="true">2024-11-22</td>
+      <td class="editable" contenteditable="true">2024-11-29</td>
+    </tr>
+  </table>
+
+  <h3>Details of Payment</h3>
+  <table>
+    <tr>
+      <th>Description</th>
+      <th>Amount (₦)</th>
+    </tr>
+    <tr>
+      <td class="editable" contenteditable="true">API Consumption Services - Initial Deposit</td>
+      <td class="editable" contenteditable="true">33,500</td>
+    </tr>
+  </table>
+
+  <p class="total">Total: ₦<span class="editable" contenteditable="true">33,500</span></p>
+
+  <div class="note">
+    <strong>Note:</strong> Thank you for your payment. Please ensure all payments are made to the bank details provided. Let me know if you have any questions.
+  </div>
+
+  <h3>Bank Details</h3>
+  <p><strong>Bank Name:</strong> <span class="editable" contenteditable="true">[Your Bank Name]</span></p>
+  <p><strong>Account Name:</strong> <span class="editable" contenteditable="true">Okoroafor Kelechi Divine</span></p>
+  <p><strong>Account Number:</strong> <span class="editable" contenteditable="true">[Your Account Number]</span></p>
+</div>
+
+<div class="button-container">
+  <button class="button" onclick="saveInvoice()">Save for Future Reference</button>
+  <button class="button" onclick="downloadPDF()">Download as PDF</button>
+  <button class="button" onclick="downloadImage()">Download as Image</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+  // Save the invoice data to localStorage
+  function saveInvoice() {
+    const editableFields = document.querySelectorAll('.editable');
+    const invoiceData = Array.from(editableFields).map(field => field.innerText);
+    localStorage.setItem('savedInvoice', JSON.stringify(invoiceData));
+    alert('Invoice saved successfully!');
+  }
+
+  // Load the invoice data from localStorage
+  window.onload = function () {
+    const savedInvoice = JSON.parse(localStorage.getItem('savedInvoice'));
+    if (savedInvoice) {
+      const editableFields = document.querySelectorAll('.editable');
+      editableFields.forEach((field, index) => {
+        field.innerText = savedInvoice[index];
+      });
+    }
+  };
+
+  // Download the invoice as a PDF
+  function downloadPDF() {
+    const invoice = document.getElementById('invoice');
+    const opt = {
+      margin: 1,
+      filename: 'invoice.pdf',
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().from(invoice).set(opt).save();
+  }
+
+  // Download the invoice as an Image
+  function downloadImage() {
+    const invoice = document.getElementById('invoice');
+    html2canvas(invoice).then(canvas => {
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = 'invoice.png';
+      link.click();
+    });
+  }
+</script>
+
+</body>
+</html>
+
